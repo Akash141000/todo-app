@@ -7,6 +7,7 @@ import (
 )
 
 func TodoRoutes(c *gin.RouterGroup) {
-	c.GET("/getTodos", todo.GetAllTodo)
-	c.POST("/addTodo", todo.AddTodo)
+	c.GET("/getTodos", todo.GetAllTodoHandler)
+	c.POST("/addTodo", todo.AddTodoHandler)
+	c.POST("/updateTodo", todo.UpdateTodoHandler)
 }

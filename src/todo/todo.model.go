@@ -11,7 +11,7 @@ type Todo struct {
 	Id          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	Name        string             `json:"name" validate:"required"`
 	Description string             `json:"description"`
-	Completed   bool               `json:"completed,omitempty"`
+	Completed   bool               `json:"completed"`
 }
 
 var TodoModel *mongo.Collection

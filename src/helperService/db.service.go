@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func FindAll(model *mongo.Collection) []primitive.M {
@@ -47,4 +48,17 @@ func FindById(model *mongo.Collection, id primitive.ObjectID) *mongo.SingleResul
 	// userId, err := primitive.ObjectIDFromHex(data.ID)
 	foundUser := model.FindOne(ctx, bson.M{"_id": id})
 	return foundUser
+}
+
+func UpdateOne(model *mongo.Collection, filter interface{}, update interface{}) *mongo.SingleResult {
+	fmt.Println("UPDATE ONE", filter, update)
+	ctx := context.Background()
+
+	var queryOptions options.FindOneAndUpdateOptions
+	// var newOptions options.
+	returnDocument := options.After
+	queryOptions.ReturnDocument = &returnDocument
+	// options.ReturnDocument
+	updatedDoc := model.FindOneAndUpdate(ctx, filter, update, &queryOptions)
+	return updatedDoc
 }

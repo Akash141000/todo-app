@@ -46,3 +46,13 @@ func FindOne() {
 	fmt.Println("FIND ONE")
 
 }
+
+func UpdateTodo(todoId string, data interface{}) *mongo.SingleResult {
+	id, _ := primitive.ObjectIDFromHex(todoId)
+
+	filter := bson.M{"_id": id}
+	update := bson.M{"$set": data}
+	updatedDoc := helperservice.UpdateOne(TodoModel, filter, update)
+
+	return updatedDoc
+}
