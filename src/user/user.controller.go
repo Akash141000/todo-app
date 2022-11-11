@@ -16,8 +16,7 @@ func Login(ginC *gin.Context) {
 	}
 
 	result := LoginUser(user)
-
-	ginC.JSON(http.StatusAccepted, gin.H{"RESULT": result})
+	ginC.JSON(http.StatusAccepted, gin.H{"RESULT": "User logged in Successfully"})
 }
 
 func Signup(ginC *gin.Context) {
@@ -28,7 +27,6 @@ func Signup(ginC *gin.Context) {
 	}
 
 	result := CreateUser(user)
-
-	ginC.JSON(http.StatusAccepted, gin.H{"RESULT": result.InsertedID})
+	ginC.JSON(http.StatusAccepted, gin.H{"RESULT": "User created successfully"})
 
 }
