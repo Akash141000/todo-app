@@ -30,7 +30,7 @@ func GetAllTodoHandler(ginC *gin.Context) {
 
 	result := FindAll()
 
-	ginC.JSON(http.StatusAccepted, gin.H{"Result": result})
+	ginC.JSON(http.StatusAccepted, gin.H{"todoList": result, "message": "Todo list"})
 }
 
 func UpdateTodoHandler(ginC *gin.Context) {
