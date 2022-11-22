@@ -43,14 +43,23 @@ func InsertOne(model *mongo.Collection, data interface{}) (*mongo.InsertOneResul
 }
 
 func FindById(model *mongo.Collection, id primitive.ObjectID) *mongo.SingleResult {
-	fmt.Println("FIND ONE", model.Name())
+	fmt.Println("FIND BY ID", model.Name())
 	ctx := context.Background()
 	// userId, err := primitive.ObjectIDFromHex(data.ID)
 	foundUser := model.FindOne(ctx, bson.M{"_id": id})
 	return foundUser
 }
 
-func UpdateOne(model *mongo.Collection, filter interface{}, update interface{}) *mongo.SingleResult {
+func FindOne(model *mongo.Collection, filter interface{}) (*struct{}, error) {
+	fmt.Println("FIND ONE", model.Name())
+	ctx := context.Background()
+	var docFound struct{}
+	err := model.FindOne(ctx, filter).Decode(&docFound)
+
+	return &docFound, err
+}
+
+func UpdateOne(model *mongo.Collection, filter interface{}, update interface{}) (*struct{}, error) {
 	fmt.Println("UPDATE ONE", filter, update)
 	ctx := context.Background()
 
@@ -59,6 +68,7 @@ func UpdateOne(model *mongo.Collection, filter interface{}, update interface{}) 
 	returnDocument := options.After
 	queryOptions.ReturnDocument = &returnDocument
 	// options.ReturnDocument
-	updatedDoc := model.FindOneAndUpdate(ctx, filter, update, &queryOptions)
-	return updatedDoc
+	var updatedDoc struct{}
+	err := model.FindOneAndUpdate(ctx, filter, update, &queryOptions).Decode(&updatedDoc)
+	return &updatedDoc, err
 }

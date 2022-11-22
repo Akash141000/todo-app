@@ -1,4 +1,4 @@
-package configurations
+package db
 
 import (
 	"context"
@@ -10,27 +10,33 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// save db instance
+var db *mongo.Database
+var UserModel *mongo.Collection
+var TodoModel *mongo.Collection
+
 func ConnectDB() *mongo.Database {
 	fmt.Println("Connecting to DB....")
-	ctx, cancel := context.WithTimeout(context.TODO(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.TODO(), 5*time.Second)
 
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
-	db := client.Database("TODO")
-
-	//create collection
+	db = client.Database("TODO")
 
 	if err != nil {
-		fmt.Println("Mongo error")
-		log.Fatal(err)
+		fmt.Println("MONGODB ERROR --> Panic")
+		log.Panic(err)
+		panic(err)
 	}
 	fmt.Println("Connection to DB successfull")
+	UserModel = CreateCollection("user")
+	TodoModel = CreateCollection("todo")
 	return db
 }
 
-// save db instance
-var db *mongo.Database = ConnectDB()
-
 func CreateCollection(collectionName string) *mongo.Collection {
+	if db == nil {
+		log.Fatal("Database not connected!")
+	}
 	return db.Collection(collectionName)
 }

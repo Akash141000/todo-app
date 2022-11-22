@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	configurations "todoBackend/configs"
+	db "todoBackend/db"
 	"todoBackend/routes"
 
 	"github.com/gin-gonic/gin"
@@ -11,6 +11,9 @@ import (
 func main() {
 	port := "127.0.0.1:8080"
 	ginD := gin.Default()
+
+	//connect DB
+	db.ConnectDB()
 
 	//register all routes
 	routes.UserRoutes(&ginD.RouterGroup)
@@ -22,9 +25,6 @@ func main() {
 		})
 	})
 	error := ginD.Run(port)
-
-	//connect DB
-	configurations.ConnectDB()
 
 	if error != nil {
 		fmt.Println("ERROR OCCURED")

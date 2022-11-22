@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	db "todoBackend/db"
 	helperservice "todoBackend/src/helperService"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,7 +15,7 @@ import (
 func FindAll() []primitive.M {
 	fmt.Printf("FIND All")
 	ctx := context.Background()
-	cursor, err := TodoModel.Find(ctx, bson.D{{}})
+	cursor, err := db.TodoModel.Find(ctx, bson.D{{}})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,7 +35,7 @@ func InsertTodo(todo Todo) *mongo.InsertOneResult {
 	if !todo.Completed {
 		todo.Completed = false
 	}
-	insertedTodo, err := helperservice.InsertOne(TodoModel, todo)
+	insertedTodo, err := helperservice.InsertOne(db.TodoModel, todo)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,12 +48,12 @@ func FindOne() {
 
 }
 
-func UpdateTodo(todoId string, data interface{}) *mongo.SingleResult {
+func UpdateTodo(todoId string, data interface{}) (*struct{}, error) {
 	id, _ := primitive.ObjectIDFromHex(todoId)
 
 	filter := bson.M{"_id": id}
 	update := bson.M{"$set": data}
-	updatedDoc := helperservice.UpdateOne(TodoModel, filter, update)
+	updatedDoc, err := helperservice.UpdateOne(db.TodoModel, filter, update)
 
-	return updatedDoc
+	return updatedDoc, err
 }

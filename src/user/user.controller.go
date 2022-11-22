@@ -15,8 +15,12 @@ func Login(ginC *gin.Context) {
 		log.Fatal("Error Binding JSONs")
 	}
 
-	result := LoginUser(user)
-	ginC.JSON(http.StatusAccepted, gin.H{"RESULT": "User logged in Successfully"})
+	userFound, err := LoginUser(user)
+	if err != nil {
+		ginC.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid credentials"})
+		return
+	}
+	ginC.JSON(http.StatusAccepted, gin.H{"message": "User logged in Successfully", "data": userFound})
 }
 
 func Signup(ginC *gin.Context) {
@@ -26,7 +30,11 @@ func Signup(ginC *gin.Context) {
 		log.Fatal("Error Binding JSONs")
 	}
 
-	result := CreateUser(user)
-	ginC.JSON(http.StatusAccepted, gin.H{"RESULT": "User created successfully"})
+	createdUser := CreateUser(user)
+	if createdUser == nil {
+		ginC.JSON(http.StatusNotAcceptable, gin.H{"message": "Unable to create User"})
+		return
+	}
+	ginC.JSON(http.StatusAccepted, gin.H{"message": "User created successfully"})
 
 }

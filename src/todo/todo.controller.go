@@ -45,11 +45,12 @@ func UpdateTodoHandler(ginC *gin.Context) {
 	}
 	fmt.Println("UPDATE TODO>>", todoData)
 
-	var todo Todo
+	// var todo Todo
 
-	if err := UpdateTodo(todoData.Id, todoData.Data).Decode(&todo); err != nil {
+	if doc, err := UpdateTodo(todoData.Id, todoData.Data); err != nil {
+		fmt.Println("DOC", doc)
 		log.Fatal(err)
 	}
 
-	ginC.JSON(http.StatusAccepted, gin.H{"RESULT": todo})
+	ginC.JSON(http.StatusAccepted, gin.H{"RESULT": "Doc updated"})
 }
