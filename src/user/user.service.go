@@ -10,7 +10,6 @@ import (
 
 func CreateUser(user User) *mongo.InsertOneResult {
 	hashedPassword := HashPassword(user)
-
 	createdUser, _ := helperservice.InsertOne(db.UserModel, map[string]string{"email": user.Email, "password": hashedPassword})
 	return createdUser
 }
