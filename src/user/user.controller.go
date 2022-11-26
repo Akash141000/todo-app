@@ -9,7 +9,7 @@ import (
 )
 
 func Login(ginC *gin.Context) {
-	fmt.Println("LOGIN")
+	fmt.Println("API >> LOGIN")
 	var user User
 	if err := ginC.BindJSON(&user); err != nil {
 		log.Fatal("Error Binding JSONs")
@@ -24,7 +24,7 @@ func Login(ginC *gin.Context) {
 }
 
 func Signup(ginC *gin.Context) {
-	fmt.Println("SIGNUP")
+	fmt.Println("API >> SIGNUP")
 	var user User
 	if err := ginC.BindJSON(&user); err != nil {
 		log.Fatal("Error Binding JSONs")

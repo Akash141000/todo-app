@@ -38,6 +38,7 @@ func ConnectDB() *mongo.Database {
 	}
 	db = client.Database("TODO")
 	fmt.Println("Connection to DB successfull")
+	//create mongo collections
 	UserModel = CreateCollection("user")
 	TodoModel = CreateCollection("todo")
 	return db

@@ -50,17 +50,19 @@ func FindById(model *mongo.Collection, id primitive.ObjectID) *mongo.SingleResul
 	return foundUser
 }
 
-func FindOne(model *mongo.Collection, filter interface{}) (*struct{}, error) {
-	fmt.Println("FIND ONE", model.Name())
+func FindOne(model *mongo.Collection, filter interface{}) (map[string]interface{}, error) {
+	fmt.Println("FIND ONE>>", model.Name())
 	ctx := context.Background()
-	var docFound struct{}
+	var docFound map[string]interface{}
 	err := model.FindOne(ctx, filter).Decode(&docFound)
-
-	return &docFound, err
+	if err != nil {
+		fmt.Println("QUERY ERROR>>", err)
+	}
+	return docFound, err
 }
 
-func UpdateOne(model *mongo.Collection, filter interface{}, update interface{}) (*struct{}, error) {
-	fmt.Println("UPDATE ONE", filter, update)
+func UpdateOne(model *mongo.Collection, filter interface{}, update interface{}) (map[string]interface{}, error) {
+	fmt.Println("UPDATE ONE>>", filter, update)
 	ctx := context.Background()
 
 	var queryOptions options.FindOneAndUpdateOptions
@@ -68,7 +70,11 @@ func UpdateOne(model *mongo.Collection, filter interface{}, update interface{}) 
 	returnDocument := options.After
 	queryOptions.ReturnDocument = &returnDocument
 	// options.ReturnDocument
-	var updatedDoc struct{}
+	var updatedDoc map[string]interface{}
+
 	err := model.FindOneAndUpdate(ctx, filter, update, &queryOptions).Decode(&updatedDoc)
-	return &updatedDoc, err
+	if err != nil {
+		fmt.Println("QUERY ERROR>>", err)
+	}
+	return updatedDoc, err
 }

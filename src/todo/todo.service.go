@@ -48,7 +48,7 @@ func FindOne() {
 
 }
 
-func UpdateTodo(todoId string, data interface{}) (*struct{}, error) {
+func UpdateTodo(todoId string, data interface{}) (map[string]interface{}, error) {
 	id, _ := primitive.ObjectIDFromHex(todoId)
 
 	filter := bson.M{"_id": id}
