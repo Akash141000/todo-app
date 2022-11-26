@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	db "todoBackend/db"
+	"todoBackend/middleware"
 	"todoBackend/routes"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,9 @@ func main() {
 
 	//register all routes
 	routes.UserRoutes(&ginD.RouterGroup)
+
+	//Auth middleware for all below routes
+	ginD.Use(middleware.AuthGuard)
 	routes.TodoRoutes(&ginD.RouterGroup)
 
 	ginD.GET("/", func(c *gin.Context) {

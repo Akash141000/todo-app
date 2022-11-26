@@ -21,7 +21,6 @@ func ConnectDB() *mongo.Database {
 	defer cancel()
 	//create mongodb client
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
-
 	if err != nil {
 		fmt.Println("MONGODB ERROR ")
 		log.Panic(err)

@@ -3,9 +3,11 @@ package user
 import (
 	"errors"
 	"fmt"
+	"time"
 	"todoBackend/db"
 	helperservice "todoBackend/src/helperService"
 
+	"github.com/golang-jwt/jwt/v4"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -29,9 +31,24 @@ func LoginUser(user User) (interface{}, error) {
 
 	hashedPassword := loginUser["password"].(string)
 	isEqual := CompareHashedPassword(hashedPassword, user.Password)
+
 	if isEqual {
-		return loginUser, nil
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"exp":        time.Now().Add(30 * time.Minute),
+			"user":       user.Email,
+			"authorized": true,
+		})
+
+		//todo:change key
+		tokenString, tokenSignError := token.SignedString([]byte("jwtSignKey"))
+
+		if tokenSignError != nil {
+			fmt.Println("JWT SIGNING ERROR>>", tokenSignError)
+			return nil, errors.New("error logging in user")
+		}
+		return map[string]string{"token": tokenString}, nil
 	}
+
 	return nil, errors.New("invalid credentials")
 }
 

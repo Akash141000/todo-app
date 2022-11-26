@@ -51,7 +51,7 @@ func FindById(model *mongo.Collection, id primitive.ObjectID) *mongo.SingleResul
 }
 
 func FindOne(model *mongo.Collection, filter interface{}) (map[string]interface{}, error) {
-	fmt.Println("FIND ONE>>", model.Name())
+	// fmt.Println("FIND ONE>>", model.Name())
 	ctx := context.Background()
 	var docFound map[string]interface{}
 	err := model.FindOne(ctx, filter).Decode(&docFound)
