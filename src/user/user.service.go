@@ -6,8 +6,10 @@ import (
 	"time"
 	"todoBackend/db"
 	helperservice "todoBackend/src/helperService"
+	"todoBackend/utils"
 
 	"github.com/golang-jwt/jwt/v4"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -24,29 +26,47 @@ func LoginUser(user User) (interface{}, error) {
 	filter := make(map[string]interface{})
 	filter["email"] = user.Email
 
-	loginUser, err := helperservice.FindOne(db.UserModel, &filter)
+	userFound, err := helperservice.FindOne(db.UserModel, &filter)
 	if err != nil {
 		return nil, err
 	}
-
-	hashedPassword := loginUser["password"].(string)
+	loginUser := &User{
+		ID:       userFound["_id"].(primitive.ObjectID),
+		Email:    userFound["email"].(string),
+		Password: userFound["password"].(string),
+	}
+	hashedPassword := loginUser.Password
 	isEqual := CompareHashedPassword(hashedPassword, user.Password)
 
+	signingKey := []byte("jwtSigningKey")
+
+	claims := &utils.Claims{
+		Email: loginUser.Email,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: &jwt.NumericDate{
+				Time: time.Now().Local().Add(time.Hour * time.Duration(24)),
+			},
+		},
+	}
+	refreshTokenClaims := claims
+
 	if isEqual {
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"exp":        time.Now().Add(30 * time.Minute),
-			"user":       user.Email,
-			"authorized": true,
-		})
+		accessToken, accessTokenError := jwt.NewWithClaims(jwt.SigningMethodHS256, *claims).SignedString(signingKey)
 
-		//todo:change key
-		tokenString, tokenSignError := token.SignedString([]byte("jwtSignKey"))
+		// refresh token
+		refreshTokenClaims.ExpiresAt.Time = time.Now().Local().Add(time.Hour * time.Duration(24) * time.Duration(30))
+		refreshToken, refreshTokenError := jwt.NewWithClaims(jwt.SigningMethodHS256, *refreshTokenClaims).SignedString(signingKey)
 
-		if tokenSignError != nil {
-			fmt.Println("JWT SIGNING ERROR>>", tokenSignError)
+		if accessTokenError != nil {
+			fmt.Println("ACCESS TOKEN SIGNING ERROR>>", accessToken)
 			return nil, errors.New("error logging in user")
 		}
-		return map[string]string{"token": tokenString}, nil
+		if refreshTokenError != nil {
+			fmt.Println("REFRESH TOKEN SIGNING ERROR>>", accessToken)
+			return nil, errors.New("error logging in user")
+		}
+
+		return map[string]string{"accessToken": accessToken, "refreshToken": refreshToken}, nil
 	}
 
 	return nil, errors.New("invalid credentials")
