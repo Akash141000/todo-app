@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	db "todoBackend/db"
 	"todoBackend/middleware"
 	"todoBackend/routes"
@@ -21,16 +21,21 @@ func main() {
 
 	//Auth middleware for all below routes
 	ginD.Use(middleware.AuthGuard)
+
+	//guarded routes
 	routes.TodoRoutes(&ginD.RouterGroup)
 
+	//testing route
 	ginD.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"Default": "Hello from Todo application",
 		})
 	})
-	error := ginD.Run(port)
 
-	if error != nil {
-		fmt.Println("ERROR OCCURED")
+	//start the server
+	serverError := ginD.Run(port)
+
+	if serverError != nil {
+		log.Panic("unable to start the server", serverError)
 	}
 }

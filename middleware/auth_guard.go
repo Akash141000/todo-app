@@ -11,6 +11,12 @@ import (
 
 func AuthGuard(c *gin.Context) {
 	fmt.Println("AUTH MIDDLEWARE >>")
+
+	// if path is "/" then don't check token
+	if c.Request.URL.Path == "/" {
+		c.Next()
+		return
+	}
 	authToken := c.Request.Header["Authorization"]
 	// fmt.Println("AUTH HEADER>>", authToken)
 	if authToken == nil {

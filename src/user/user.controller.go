@@ -6,13 +6,22 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 func Login(ginC *gin.Context) {
-	fmt.Println("API >> LOGIN")
 	var user User
+	validate := validator.New(validator.WithRequiredStructEnabled())
+
 	if err := ginC.BindJSON(&user); err != nil {
-		log.Fatal("Error Binding JSONs")
+		ginC.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid credentials"})
+		return
+	}
+
+	validationErr := validate.Struct(user)
+	if validationErr != nil {
+		ginC.JSON(http.StatusBadRequest, gin.H{"message": "Required fields missing!"})
+		return
 	}
 
 	userFound, err := LoginUser(user)
